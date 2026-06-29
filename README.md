@@ -1,118 +1,66 @@
-# 🧠 Taller de Aprendizaje Automático **No Supervisado**
+# Talleres de Aprendizaje No Supervisado 🤖🍄💳
 
-Este repositorio contiene un taller práctico de **machine learning no supervisado**: reducción de dimensionalidad (**PCA**, **t-SNE**), **clustering** (K-Means, Aglomerativo, GMM, DBSCAN) y **detección de anomalías** (Isolation Forest).
+Este repositorio contiene dos talleres prácticos enfocados en la implementación, evaluación y visualización de algoritmos de **Aprendizaje No Supervisado** utilizando Python y la librería `scikit-learn`. 
 
-La novedad de esta versión es que el taller se divide en **dos notebooks complementarios**, cada uno con su propio dataset. La gracia está en el **contraste entre ambos**: un mismo conjunto de técnicas se comporta de forma muy distinta según el tipo de datos y según si tenemos o no una etiqueta de referencia.
-
----
-
-## 🗂️ Estructura del repositorio
-
-| Notebook | Dataset | Tipo de datos | ¿Hay etiqueta? |
-|---|---|---|---|
-| [`workshop-clustering-Mushrooms.ipynb`](workshop-clustering-Mushrooms.ipynb) | [`data/mushrooms.csv`](data/mushrooms.csv) | Categóricos | Sí — `class` (solo para **validar**) |
-| [`workshop-clustering-creditcard.ipynb`](workshop-clustering-creditcard.ipynb) | [`data/credit_card.csv`](data/credit_card.csv) | Numéricos | No — segmentación **de verdad** |
-
-> Hay que entregar **los dos notebooks**. No son independientes: la Parte 2 da por sabido lo aprendido en la Parte 1.
+Los proyectos abordan dos problemáticas de negocio y análisis muy comunes: la **clasificación biológica/validación mediante clustering** (datos categóricos) y la **segmentación de clientes para estrategias de marketing** (datos numéricos), además de técnicas para **detección de anomalías**.
 
 ---
 
-## 🍄 Parte 1 — Setas (datos categóricos, *con* etiqueta)
+## 📁 Estructura del Repositorio
 
-**Notebook:** [`workshop-clustering-Mushrooms.ipynb`](workshop-clustering-Mushrooms.ipynb) · **Dataset:** [`data/mushrooms.csv`](data/mushrooms.csv)
-🔗 [Mushroom Dataset (Kaggle)](https://www.kaggle.com/uciml/mushroom-classification) · [UCI](https://archive.ics.uci.edu/ml/datasets/Mushroom)
-
-Cada fila es un hongo descrito con **~22 variables, todas categóricas** (forma, color, olor, etc.). La variable `class` es **binaria**: `e` (comestible) / `p` (venenoso).
-
-La clave pedagógica: **tenemos etiqueta, pero el clustering NO la usa**. La reservamos *solo para validar* a posteriori cuánta estructura real ha recuperado el modelo sin haberla visto.
-
-**Qué se trabaja:**
-- Carga, EDA y detección de nulos encubiertos (el valor `'?'`) y de columnas constantes (`veil-type`).
-- Imputación con la moda y **One-Hot Encoding** (`pd.get_dummies`).
-- **PCA** y **t-SNE** para visualizar un dataset de >100 dimensiones en 2D.
-- **Random Forest** como *línea base supervisada* (¿cuánta información hay realmente?) y estudio de cuántas componentes PCA bastan para mantener la precisión.
-- **Clustering**: K-Means (codo + *silhouette*), Aglomerativo (con **dendrograma**), GMM y DBSCAN.
-- Lección con **DBSCAN**: con datos categóricos one-hot, la **distancia importa** (euclídea vs **Jaccard**).
-- Validación con etiqueta: **Adjusted Rand Index (ARI)** y **NMI**.
-- **Isolation Forest** para detección de anomalías.
+* `workshop-clustering-Mushrooms.ipynb`: Notebook de la **Parte 1** enfocado en datos categóricos (Mushroom Dataset).
+* `workshop-clustering-creditcard.ipynb`: Notebook de la **Parte 2** enfocado en datos numéricos de comportamiento financiero (Credit Card Dataset).
+* `data/`: Carpeta sugerida para almacenar los conjuntos de datos en formato `.csv` (`mushrooms.csv` y `ccdata.csv`).
 
 ---
 
-## 💳 Parte 2 — Tarjetas de crédito (datos numéricos, *sin* etiqueta)
+## 🍄 Parte 1: Dataset de Setas (Variables Categóricas)
 
-**Notebook:** [`workshop-clustering-creditcard.ipynb`](workshop-clustering-creditcard.ipynb) · **Dataset:** [`data/credit_card.csv`](data/credit_card.csv)
-🔗 [Credit Card Dataset for Clustering (Kaggle)](https://www.kaggle.com/datasets/arjunbhasin2013/ccdata)
+### 📝 Descripción del Problema
+El objetivo es analizar el comportamiento de algoritmos de clustering sobre un conjunto de datos que contiene características morfológicas de **8,124 setas**, donde todas las variables son categóricas. Aunque el dataset original incluye la etiqueta de clase (`e` = comestible, `p` = venenosa), esta **solo se utiliza al final para validar** la estructura descubierta por los modelos.
 
-Comportamiento de uso de ~9.000 titulares de tarjeta durante 6 meses, con **17 variables numéricas** (saldo, compras, adelantos de efectivo, límite, pagos…).
-
-La clave pedagógica: **aquí NO hay etiqueta**. Es aprendizaje no supervisado «de verdad»: no se puede calcular ARI porque no existe una verdad de referencia. El éxito se mide con **métricas internas** y, sobre todo, con la **interpretabilidad** de los segmentos. El objetivo es **segmentar clientes** para una estrategia de marketing.
-
-**Qué se trabaja:**
-- Carga, EDA y tratamiento de nulos (imputación con la **mediana**, más robusta en datos sesgados).
-- Observación del **sesgo** típico de datos financieros (histogramas).
-- **Escalado** (`StandardScaler`) — imprescindible cuando las variables tienen escalas muy distintas.
-- **PCA**: varianza explicada acumulada (*scree plot*) y proyección a 2D (aquí los datos son una **nube continua**, no grupos separados).
-- **Clustering**: K-Means (codo + *silhouette*), Aglomerativo (dendrograma), GMM y DBSCAN.
-- Validación **sin etiqueta**: *silhouette*, *Davies-Bouldin* y *Calinski-Harabasz*.
-- Visualización de los segmentos con **t-SNE**.
-- **Interpretación de perfiles** (heatmap de medias por cluster) → nombrar los segmentos en términos de negocio (VIP, riesgo, poco activos…). **Este es el entregable del caso.**
-- **Isolation Forest** para detectar clientes atípicos.
+### 🛠️ Flujo de Trabajo y Técnicas
+1.  **Limpieza e Imputación**: 
+    * Identificación de valores nulos ocultos (`'?'` en la variable `stalk-root`) e imputación con la moda.
+    * Eliminación de variables con varianza cero (`veil-type`) que no aportan información.
+2.  **Codificación**: Transformación de variables categóricas mediante *One-Hot Encoding* (`pd.get_dummies`).
+3.  **Reducción de Dimensionalidad**: Uso de **PCA** (lineal) y **t-SNE** (no lineal) para proyectar y visualizar un espacio de más de 100 dimensiones en 2D.
+4.  **Modelos de Clustering**: 
+    * *K-Means*, *Clustering Jerárquico Aglomerativo*, *Gaussian Mixture Models (GMM)* y *DBSCAN*.
+5.  **Evaluación**: 
+    * Métricas internas: Método del codo, *Silhouette*, *Davies-Bouldin*, *Calinski-Harabasz*.
+    * Métricas con etiqueta de referencia: *Adjusted Rand Index (ARI)* y *Normalized Mutual Information (NMI)*.
+6.  **Detección de Anomalías**: Uso de **Isolation Forest** para localizar los ejemplares morfológicamente más atípicos.
 
 ---
 
-## 🧩 ¿Por qué dos datasets?
+## 💳 Parte 2: Segmentación de Clientes de Tarjeta de Crédito (Variables Numéricas)
 
-| | 🍄 Setas | 💳 Tarjetas |
-|---|---|---|
-| Variables | Categóricas | Numéricas |
-| Preprocesado clave | One-Hot Encoding | Escalado / imputación |
-| Etiqueta | Sí (solo validar) | **No** |
-| Cómo se valida | ARI / NMI (vs etiqueta) | Métricas internas + interpretabilidad |
-| Estructura | Grupos separables | Nube continua |
-| Distancia | Jaccard > euclídea | Euclídea sobre datos escalados |
+### 📝 Descripción del Problema
+A diferencia del primer taller, este caso representa un escenario de aprendizaje no supervisado puro. Consiste en analizar el comportamiento de aproximadamente **9,000 titulares de tarjetas de crédito** durante 6 meses utilizando 17 variables numéricas (saldos, compras, adelantos de efectivo, límite de crédito, pagos, etc.). El objetivo es **descubrir segmentos de clientes reales** para personalizar estrategias de marketing y productos financieros.
 
-**Conclusión transversal:** no hay un algoritmo ni una métrica que gane siempre. El acierto está en elegir el preprocesado, la distancia y la forma de validar **según el tipo de datos y el problema**.
-
----
-
-## 🔧 Tecnologías
-
-- Python · Pandas · NumPy
-- Seaborn · Matplotlib (y opcionalmente Plotly)
-- Scikit-learn: `PCA`, `TSNE`, `KMeans`, `AgglomerativeClustering`, `GaussianMixture`, `DBSCAN`, `IsolationForest`, `RandomForestClassifier` y métricas de clustering
-- *(Opcional, para ir más allá)* `umap-learn`, `hdbscan`, `mlxtend`, SciPy (`linkage` / `dendrogram`)
+### 🛠️ Flujo de Trabajo y Técnicas
+1.  **Preprocesamiento Crítico**:
+    * Imputación de valores faltantes (por ejemplo, en `MINIMUM_PAYMENTS` y `CREDIT_LIMIT`).
+    * **Escalado de Datos**: Al trabajar con variables numéricas en escalas masivamente distintas, se vuelve indispensable la estandarización/escalado.
+2.  **Ingeniería de Características (KPIs)**: Creación de variables de negocio como el *ratio de uso del límite* (`BALANCE / CREDIT_LIMIT`) o la *compra media por transacción*.
+3.  **Modelado**: Aplicación y tuning de *K-Means*, *GMM*, *Clustering Aglomerativo* y *DBSCAN*. 
+4.  **Análisis de Perfiles**: Creación de un **Heatmap de perfiles por Cluster** para convertir las métricas matemáticas en segmentos interpretables por el equipo de negocio.
+5.  **Detección de Outliers**: Implementación de **Isolation Forest** combinado con **PCA(2)** para marcar y mapear visualmente a los clientes con comportamientos financieros atípicos.
 
 ---
 
-## 📊 Evaluación
+## 🚀 Tecnologías y Librerías Utilizadas
 
-Se evaluarán las siguientes competencias **en ambos notebooks**:
-
-**Competencia: Evaluar conjuntos de datos con herramientas de análisis y visualización**
-- ✅ Uso y gestión de formato `.csv`
-- ✅ Limpieza y preprocesado de datos
-- ✅ Visualización de datos (Seaborn, Matplotlib, Plotly)
-- ✅ Análisis exploratorio detallado (EDA)
-- ✅ Técnicas de preprocesado (normalización, escalado, label/one-hot encoding)
-- ✅ Técnicas avanzadas de limpieza (atípicos, imputación de faltantes)
-- ✅ Técnicas de reducción de dimensionalidad (PCA, t-SNE)
-
-**Competencia: Aplicar algoritmos de ML según el problema**
-- ✅ Seleccionar las variables útiles y descartar las que no aportan
-- ✅ Reconocer un caso de aprendizaje no supervisado
-- ✅ Aplicar modelos de clustering
-- ✅ Distinguir regresión / clasificación / clustering
-- ✅ Separación de datos en train/test (Parte 1)
-- ✅ Uso de modelos de *ensemble* (RandomForest como baseline en la Parte 1)
-- ✅ Interpretación y validación de los resultados (ARI/NMI y métricas internas)
+El proyecto está desarrollado completamente en **Python 3** empleando las siguientes librerías:
+* **Manipulación de datos**: `pandas`, `numpy`
+* **Visualización**: `matplotlib`, `seaborn`
+* **Machine Learning**: `scikit-learn` (módulos de `cluster`, `decomposition`, `ensemble`, `mixture`, `manifold` y `metrics`)
+* **Análisis Jerárquico**: `scipy.cluster.hierarchy` (Dendrogramas y Linkage)
 
 ---
 
-## 🚀 Cómo empezar
-
-1. Clona el repositorio.
-2. Los datasets están en la carpeta [`data/`](data/) (`data/mushrooms.csv` y `data/credit_card.csv`); al leerlos usa esa ruta, p. ej. `pd.read_csv("data/mushrooms.csv")`.
-3. Abre cada notebook (Jupyter / VS Code) y **completa las celdas marcadas con comentarios** (`# ...`). Las celdas traen pistas, no la solución.
-4. Empieza por la **Parte 1 (setas)** y luego haz la **Parte 2 (tarjetas)**.
-
-> 💡 Cada notebook termina con una sección **«Para ir más allá»** con extensiones opcionales (UMAP, HDBSCAN, reglas de asociación, ingeniería de KPIs…) para quien quiera profundizar.
+## 📊 Principales Conclusiones de los Talleres
+* **La importancia de la métrica**: Con datos categóricos (Setas), *DBSCAN* demuestra que la elección de la métrica de distancia es crítica.
+* **Validación interna vs. externa**: En escenarios reales sin etiquetas (Tarjetas de Crédito), la validación se guía por coeficientes como *Silhouette* y, por encima de todo, por la **interpretabilidad comercial** de los clústeres.
+* **Tratamiento de Datos**: El escalado e imputación transforman drásticamente el rendimiento en variables numéricas, un paso que no es crítico en variables puramente categóricas.
